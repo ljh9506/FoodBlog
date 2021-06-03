@@ -1,12 +1,14 @@
 import fs from 'fs';
 import path from 'path';
-import Layout from '../components/Layout';
+import Layout from '@components/Layout';
 import matter from 'gray-matter';
 import Link from 'next/link';
-import Post from '../components/Post';
-import { sortByDate } from '../utils';
+import Post from '@components/Post';
+import { sortByDate } from '@utils/index';
+import { POSTS_PER_PAGE } from '@config/index';
+import Pagination from '@components/Pagination';
 
-export default function HomePage({ posts }) {
+export default function BlogPage({ posts, numPages, currentPage }) {
   return (
     <Layout>
       <h1 className='text-5xl border-b-4 p-5 font-bold'>Latest Posts</h1>
@@ -18,7 +20,7 @@ export default function HomePage({ posts }) {
           </Post>
         ))}
       </div>
-
+      <Pagination currentPage={currentPage} numPages={numPages} />
       <Link href='/blog'>
         <a className='block text-center border border-gray-500 text-gray-800 rounded-md py-4 my-5 transition duration-500 ease select-none hover:text-white hover:bg-gray-900 focus:outline-none focus:shadow-outline w-full'>
           All posts
@@ -28,7 +30,27 @@ export default function HomePage({ posts }) {
   );
 }
 
-export async function getStaticProps() {
+export async function getStaticPaths() {
+  const files = fs.readdirSync(path.join('posts'));
+
+  const numPages = Math.ceil(files.length / POSTS_PER_PAGE);
+
+  let paths = [];
+
+  for (let i = 1; i <= numPages; i++) {
+    paths.push({
+      params: { page_index: String(i) },
+    });
+  }
+
+  return {
+    paths,
+    fallback: false,
+  };
+}
+
+export async function getStaticProps({ params }) {
+  const page = Number((params && params.page_index) || 1);
   const files = fs.readdirSync(path.join('posts'));
 
   const posts = files.map((filename) => {
@@ -47,11 +69,17 @@ export async function getStaticProps() {
     };
   });
 
-  // console.log(posts);
+  const numPages = Math.ceil(files.length / POSTS_PER_PAGE);
+  const pageIndex = page - 1;
+  const orderedPosts = posts
+    .sort(sortByDate)
+    .slice(pageIndex * POSTS_PER_PAGE, (pageIndex + 1) * POSTS_PER_PAGE);
 
   return {
     props: {
-      posts: posts.sort(sortByDate).slice(0, 6),
+      posts: orderedPosts,
+      numPages,
+      currentPage: page,
     },
   };
 }

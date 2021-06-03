@@ -6,7 +6,7 @@ import Link from 'next/link';
 import Post from '../components/Post';
 import { sortByDate } from '../utils';
 
-export default function HomePage({ posts }) {
+export default function CategoryBlogPage({ posts }) {
   return (
     <Layout>
       <h1 className='text-5xl border-b-4 p-5 font-bold'>Latest Posts</h1>
