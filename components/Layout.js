@@ -11,7 +11,7 @@ export default function Layout({ title, keywords, description, children }) {
         <link rel='icon' href='/favicon.ico' />
       </Head>
       <Header />
-      <main className='container mx-auto my-7'>{children}</main>
+      <main className='container mx-auto'>{children}</main>
     </div>
   );
 }
