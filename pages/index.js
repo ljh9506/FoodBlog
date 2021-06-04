@@ -1,17 +1,16 @@
 import fs from 'fs';
 import path from 'path';
 import Layout from '../components/Layout';
-import matter from 'gray-matter';
 import Link from 'next/link';
 import Post from '../components/Post';
-import { sortByDate } from '../utils';
 import { getPosts } from '@lib/posts';
+import Search from '@components/Search';
 
 export default function HomePage({ posts }) {
   return (
     <Layout>
+      <Search />
       <h1 className='text-5xl border-b-4 p-5 font-bold'>Latest Posts</h1>
-
       <div className='grid md:grid-cols-2 lg:grid-cols-3 gap-5'>
         {posts.map((post, index) => (
           <Post key={index} post={post}>
